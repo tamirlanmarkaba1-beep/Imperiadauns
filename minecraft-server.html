@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Империя Битва Кланов</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #a855f7;
+            --dark: #0f0a1f;
+            --darker: #0a0514;
+            --light: #e0e7ff;
+            --glow: rgba(139, 92, 246, 0.4);
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .header {
+            position: relative;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+            padding: 2rem 1rem;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 10px 50px rgba(139, 92, 246, 0.3);
+            z-index: 10;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #a78bfa 0%, #c084fc 50%, #e879f9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 3px;
+            text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.8)); }
+        }
+
+        .server-info {
+            margin-top: 1rem;
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            background: rgba(139, 92, 246, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .server-info span {
+            color: #c084fc;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+        }
+
+        .server-info span:active {
+            background: rgba(139, 92, 246, 0.3);
+            transform: scale(0.95);
+        }
+
+        .online-counter {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(15, 10, 31, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 1.2rem;
+            border-radius: 15px;
+            border: 2px solid var(--secondary);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            50% { 
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+        }
+
+        .online-text {
+            font-weight: 600;
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+
+        nav {
+            background: rgba(15, 10, 31, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        nav button {
+            background: transparent;
+            border: 2px solid transparent;
+            color: var(--light);
+            padding: 0.7rem 1.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        nav button:hover::before {
+            left: 100%;
+        }
+
+        nav button:hover {
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        nav button.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-color: var(--accent);
+            box-shadow: 0 5px 20px var(--glow);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section {
+            display: none;
+            animation: fadeSlideIn 0.5s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .chat-layout {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
+        .sidebar {
+            background: rgba(15, 10, 31, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 1rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .group-item {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .group-item:hover, .group-item.active {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateX(5px);
+            border-left-color: var(--accent);
+        }
+
+        .group-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .group-members {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .create-group-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .create-group-btn:active {
+            transform: scale(0.95);
+        }
+
+        .chat-main {
+            background: rgba(15, 10, 31, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 1rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid var(--secondary);
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .username {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .group-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 0.2rem 0.6rem;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .timestamp {
+            color: #6b7280;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .message-content {
+            color: var(--light);
+            line-height: 1.5;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input-container input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .chat-input-container input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .chat-input-container input::placeholder {
+            color: #6b7280;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .about-section {
+            background: rgba(15, 10, 31, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            margin-top: 1rem;
+        }
+
+        .about-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .about-content {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #d1d5db;
+            line-height: 1.8;
+        }
+
+        .creators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .creator-card {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 2px solid var(--secondary);
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .creator-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .creator-card:hover::before {
+            opacity: 1;
+        }
+
+        .creator-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+        }
+
+        .creator-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+
+        .creator-role {
+            color: #9ca3af;
+            font-style: italic;
+            position: relative;
+        }
+
+        .admin-panel {
+            background: rgba(15, 10, 31, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            margin-top: 1rem;
+        }
+
+        .admin-panel h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .admin-section {
+            margin-bottom: 2rem;
+        }
+
+        .admin-section h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .admin-controls {
+            display: grid;
+            gap: 0.8rem;
+        }
+
+        .admin-item {
+            background: rgba(139, 92, 246, 0.05);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .admin-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+        }
+
+        .btn-delete:active {
+            transform: scale(0.95);
+        }
+
+        .btn-mute {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+        }
+
+        .btn-mute:active {
+            transform: scale(0.95);
+        }
+
+        .btn-unmute {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-unmute:active {
+            transform: scale(0.95);
+        }
+
+        .muted {
+            opacity: 0.5;
+        }
+
+        .login-section {
+            max-width: 450px;
+            margin: 2rem auto;
+            background: rgba(15, 10, 31, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+        }
+
+        .login-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .login-section input {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .login-section input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .login-section button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .login-section button:active {
+            transform: scale(0.98);
+        }
+
+        .user-info {
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            background: rgba(15, 10, 31, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 15px;
+            border: 2px solid var(--secondary);
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .user-info .username {
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(15, 10, 31, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 2px solid var(--secondary);
+            max-width: 400px;
+            width: 100%;
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-cancel {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--light);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .chat-main {
+                height: 500px;
+            }
+
+            .user-info {
+                font-size: 0.85rem;
+                padding: 0.7rem;
+            }
+
+            .admin-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .admin-buttons {
+                width: 100%;
+            }
+
+            .admin-button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <div class="header">
+        <h1>⚔️ ИМПЕРИЯ БИТВА КЛАНОВ ⚔️</h1>
+        <div class="server-info">
+            IP: <span onclick="copyIP()">ImperiyaBitvaKlanov.aternos.me</span> | 
+            Порт: <span onclick="copyPort()">24660</span>
+        </div>
+    </div>
+
+    <div class="online-counter">
+        <div class="online-dot"></div>
+        <span class="online-text">Онлайн: <span id="onlineCount">0</span></span>
+    </div>
+
+    <div id="userInfo" class="user-info" style="display: none;">
+        <span class="username" id="currentUsername"></span>
+        <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+
+    <div id="loginSection" class="login-section">
+        <h2>Добро пожаловать</h2>
+        <input type="text" id="usernameInput" placeholder="Введите ваш ник" />
+        <button onclick="login()">Войти</button>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <nav>
+            <button class="nav-btn active" data-section="chat">Чат</button>
+            <button class="nav-btn" data-section="about">О сервере</button>
+            <button class="nav-btn admin-only" data-section="admin" style="display: none;">Админ-панель</button>
+        </nav>
+
+        <div class="container">
+            <div id="chat" class="section active">
+                <div class="chat-layout">
+                    <div class="sidebar">
+                        <h3>Группы</h3>
+                        <div id="groupsList"></div>
+                        <button class="create-group-btn" onclick="openCreateGroupModal()">+ Создать группу</button>
+                    </div>
+                    <div class="chat-main">
+                        <div class="chat-header" id="chatHeader">Общий чат</div>
+                        <div class="chat-messages" id="chatMessages"></div>
+                        <div class="chat-input-container">
+                            <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)" />
+                            <button class="send-btn" onclick="sendMessage()">➤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="about" class="section">
+                <div class="about-section">
+                    <h2>О Сервере</h2>
+                    <p class="about-content">
+                        Добро пожаловать на сервер Империя Битва Кланов! 
+                        Здесь вас ждут эпические сражения, стратегическое развитие и настоящее братство!
+                    </p>
+                    <div class="creators">
+                        <div class="creator-card">
+                            <h3>TOMATO_YT</h3>
+                            <p class="creator-role">Создатель сайта</p>
+                        </div>
+                        <div class="creator-card">
+                            <h3>Лидеры кланов</h3>
+                            <p class="creator-role">Скоро будут добавлены...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin" class="section">
+                <div class="admin-panel">
+                    <h2>Админ-панель</h2>
+                    
+                    <div class="admin-section">
+                        <h3>Управление игроками</h3>
+                        <div class="admin-controls" id="playersControl"></div>
+                    </div>
+
+                    <div class="admin-section">
+                        <h3>Управление группами</h3>
+                        <div class="admin-controls" id="groupsControl"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="createGroupModal" class="modal">
+        <div class="modal-content">
+            <h3>Создать группу</h3>
+            <input type="text" id="groupNameInput" placeholder="Название группы" />
+            <div class="modal-buttons">
+                <button class="btn-confirm" onclick="createGroup()">Создать</button>
+                <button class="btn-cancel" onclick="closeCreateGroupModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Создание звезд
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        // Глобальные переменные
+        let currentUser = null;
+        let messages = [];
+        let groups = [{ name: 'Общий чат', members: [], messages: [] }];
+        let currentGroup = 'Общий чат';
+        let mutedUsers = new Set();
+        let onlineUsers = new Set();
+
+        // Инициализация
+        window.onload = function() {
+            loadFromStorage();
+            updateGroupsList();
+            updateOnlineCount();
+        };
+
+        // Вход
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+
+            if (!username) {
+                alert('Введите ваш ник!');
+                return;
+            }
+
+            currentUser = { username, isAdmin: username === 'TOMATO_YT' };
+            onlineUsers.add(username);
+
+            saveToStorage();
+            updateUI();
+            updateOnlineCount();
+        }
+
+        // Выход
+        function logout() {
+            if (currentUser) {
+                onlineUsers.delete(currentUser.username);
+                updateOnlineCount();
+            }
+            currentUser = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            saveToStorage();
+        }
+
+        // Обновление UI
+        function updateUI() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('currentUsername').textContent = currentUser.username;
+
+            if (currentUser.isAdmin) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+                updateAdminPanel();
+            }
+
+            updateGroupsList();
+            renderMessages();
+        }
+
+        // Обновление счетчика онлайна
+        function updateOnlineCount() {
+            document.getElementById('onlineCount').textContent = onlineUsers.size;
+            saveToStorage();
+        }
+
+        // Навигация
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('nav-btn')) {
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.getElementById(e.target.dataset.section).classList.add('active');
+            }
+        });
+
+        // Группы
+        function updateGroupsList() {
+            const container = document.getElementById('groupsList');
+            container.innerHTML = groups.map(group => `
+                <div class="group-item ${group.name === currentGroup ? 'active' : ''}" onclick="switchGroup('${group.name}')">
+                    <div class="group-name">${group.name}</div>
+                    <div class="group-members">Участников: ${group.members.length}</div>
+                </div>
+            `).join('');
+        }
+
+        function switchGroup(groupName) {
+            currentGroup = groupName;
+            document.getElementById('chatHeader').textContent = groupName;
+            updateGroupsList();
+            renderMessages();
+        }
+
+        function openCreateGroupModal() {
+            document.getElementById('createGroupModal').classList.add('active');
+        }
+
+        function closeCreateGroupModal() {
+            document.getElementById('createGroupModal').classList.remove('active');
+            document.getElementById('groupNameInput').value = '';
+        }
+
+        function createGroup() {
+            const groupName = document.getElementById('groupNameInput').value.trim();
+
+            if (!groupName) {
+                alert('Введите название группы!');
+                return;
+            }
+
+            if (groups.find(g => g.name === groupName)) {
+                alert('Группа с таким названием уже существует!');
+                return;
+            }
+
+            groups.push({ name: groupName, members: [currentUser.username], messages: [] });
+            saveToStorage();
+            updateGroupsList();
+            closeCreateGroupModal();
+        }
+
+        // Чат
+        function sendMessage() {
+            if (!currentUser) return;
+
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+
+            if (!content) return;
+
+            if (mutedUsers.has(currentUser.username)) {
+                alert('Вы замучены и не можете отправлять сообщения!');
+                return;
+            }
+
+            const group = groups.find(g => g.name === currentGroup);
+            if (!group) return;
+
+            const message = {
+                id: Date.now(),
+                username: currentUser.username,
+                content: content,
+                timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            group.messages.push(message);
+            
+            if (!group.members.includes(currentUser.username) && currentGroup !== 'Общий чат') {
+                group.members.push(currentUser.username);
+            }
+
+            input.value = '';
+            saveToStorage();
+            updateGroupsList();
+            renderMessages();
+            scrollToBottom();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function renderMessages() {
+            const group = groups.find(g => g.name === currentGroup);
+            if (!group) return;
+
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = group.messages.map(msg => `
+                <div class="message">
+                    <div class="message-header">
+                        <span class="username">${msg.username}</span>
+                        ${currentGroup !== 'Общий чат' ? `<span class="group-badge">${currentGroup}</span>` : ''}
+                        <span class="timestamp">${msg.timestamp}</span>
+                    </div>
+                    <div class="message-content">${msg.content}</div>
+                </div>
+            `).join('');
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Админ-панель
+        function updateAdminPanel() {
+            // Управление игроками
+            const allPlayers = new Set();
+            groups.forEach(group => group.members.forEach(m => allPlayers.add(m)));
+
+            const playersContainer = document.getElementById('playersControl');
+            playersContainer.innerHTML = Array.from(allPlayers).map(player => `
+                <div class="admin-item ${mutedUsers.has(player) ? 'muted' : ''}">
+                    <span>${player}</span>
+                    <div class="admin-buttons">
+                        ${mutedUsers.has(player) 
+                            ? `<button class="admin-button btn-unmute" onclick="unmuteUser('${player}')">Размутить</button>`
+                            : `<button class="admin-button btn-mute" onclick="muteUser('${player}')">Мутить</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
+
+            // Управление группами
+            const groupsContainer = document.getElementById('groupsControl');
+            groupsContainer.innerHTML = groups.filter(g => g.name !== 'Общий чат').map(group => `
+                <div class="admin-item">
+                    <span>${group.name} (${group.members.length} чел.)</span>
+                    <div class="admin-buttons">
+                        <button class="admin-button btn-delete" onclick="deleteGroup('${group.name}')">Удалить</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function muteUser(username) {
+            mutedUsers.add(username);
+            saveToStorage();
+            updateAdminPanel();
+        }
+
+        function unmuteUser(username) {
+            mutedUsers.delete(username);
+            saveToStorage();
+            updateAdminPanel();
+        }
+
+        function deleteGroup(groupName) {
+            if (!confirm(`Удалить группу "${groupName}"?`)) return;
+
+            groups = groups.filter(g => g.name !== groupName);
+            
+            if (currentGroup === groupName) {
+                switchGroup('Общий чат');
+            }
+            
+            saveToStorage();
+            updateGroupsList();
+            updateAdminPanel();
+        }
+
+        // Копирование
+        function copyIP() {
+            navigator.clipboard.writeText('ImperiyaBitvaKlanov.aternos.me');
+            alert('IP скопирован!');
+        }
+
+        function copyPort() {
+            navigator.clipboard.writeText('24660');
+            alert('Порт скопирован!');
+        }
+
+        // Сохранение/загрузка
+        function saveToStorage() {
+            localStorage.setItem('groups', JSON.stringify(groups));
+            localStorage.setItem('mutedUsers', JSON.stringify(Array.from(mutedUsers)));
+            localStorage.setItem('onlineUsers', JSON.stringify(Array.from(onlineUsers)));
+        }
+
+        function loadFromStorage() {
+            const savedGroups = localStorage.getItem('groups');
+            const savedMuted = localStorage.getItem('mutedUsers');
+            const savedOnline = localStorage.getItem('onlineUsers');
+
+            if (savedGroups) groups = JSON.parse(savedGroups);
+            if (savedMuted) mutedUsers = new Set(JSON.parse(savedMuted));
+            if (savedOnline) onlineUsers = new Set(JSON.parse(savedOnline));
+        }
+    </script>
+</body>
+</html>
